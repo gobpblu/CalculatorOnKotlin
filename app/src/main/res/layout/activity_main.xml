@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#5B6460"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/entered_number"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:gravity="bottom|right" />
+
+        <TextView
+            android:id="@+id/result"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:textColor="@color/white"
+            android:textSize="54sp"
+            android:text="@string/zero"
+            android:gravity="bottom|right"
+            />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/plus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_plus_foreground" />
+
+            <ImageButton
+                android:id="@+id/minus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_minus_foreground" />
+
+            <ImageButton
+                android:id="@+id/multiply"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_multiply_foreground" />
+
+            <ImageButton
+                android:id="@+id/divide"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_divide_foreground" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/number1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_1_foreground" />
+
+            <ImageButton
+                android:id="@+id/number2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_2_foreground" />
+
+            <ImageButton
+                android:id="@+id/number3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_3_foreground" />
+
+            <ImageButton
+                android:id="@+id/clear_all"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_clear_foreground" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/number4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_4_foreground" />
+
+            <ImageButton
+                android:id="@+id/number5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_5_foreground" />
+
+            <ImageButton
+                android:id="@+id/number6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_6_foreground" />
+
+            <ImageButton
+                android:id="@+id/degree"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_degree_foreground" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/number7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_7_foreground" />
+
+            <ImageButton
+                android:id="@+id/number8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_8_foreground" />
+
+            <ImageButton
+                android:id="@+id/number9"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_9_foreground" />
+
+            <ImageButton
+                android:id="@+id/square_root"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_square_root_foreground" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/point"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_point_foreground" />
+
+            <ImageButton
+                android:id="@+id/number0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_0_foreground" />
+
+            <ImageButton
+                android:id="@+id/percent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_percent_foreground" />
+
+            <ImageButton
+                android:id="@+id/equals"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/image_equals_foreground" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>
