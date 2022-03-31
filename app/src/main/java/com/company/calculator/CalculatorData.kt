@@ -19,19 +19,20 @@ data class CalculatorData(
     var percentFlag: Boolean = false,
     val operations: Array<Char> = arrayOf(
         '+', '-', 0x00D7.toChar(),
-        0x00F7.toChar(), 0x221A.toChar(), '%', '^')
+        0x00F7.toChar(), 0x221A.toChar(), '%', '^'
+    )
 ) {
 
-    fun buildString(input: Char) {
+    fun buildString(input: Char) = with(exprsn) {
 //        Если входной знак - число, тогда добавляем его
         if (input in '0'..'9') {
 //            if (cd.exprsn.length >= 3 && cd.operation != null) Log.i("SecondNumber", cd.exprsn.indexOf(cd.operation!!).toString())
             // Если длина строки равна 1 и первый символ в строке это 0, тогда очищаем строку
-            if (exprsn.length == 1 && exprsn[0] == '0')
-                exprsn.clear()
+            if (length == 1 && first() == '0')
+                clear()
 
             // Добавляем цифру, выводим на экран
-            exprsn.append(input)
+            append(input)
 
         } // Иначе, если входной знак '.' и хотя бы в 1 числе нет точки,
         // тогда добавляем точку
@@ -45,18 +46,19 @@ data class CalculatorData(
         // Иначе, если входной знак - это одна из операций,
         // вычисляем выражение, если это уже 2-ая операция
         // а если первая, то просто добавляем знак и выводим
-        else if (input in operations){
+        else if (input in operations) {
             operation(input)
-        }
+        } else {
 
+        }
     }
 
-    private fun pointProcessing() {
+    private fun pointProcessing() = with(exprsn) {
 
         // Если мы работаем с 1 числом и у нас нет точки в 1 числе, тогда
         // добавляем точку, вешаем флаг точки на 1 число
         if (!pointFlag1 && operation == null) {
-            exprsn.append('.')
+            append('.')
             pointFlag1 = true
         }
         // Иначе, если мы работаем со 2 числом и у нас нет точки во 2 числе,
@@ -64,17 +66,17 @@ data class CalculatorData(
         else if (!pointFlag2 && operation != null) {
 
             // Если последний знак - это операция, тогда добавляем 0
-            if (exprsn.last() in operations) {
-                exprsn.append(0)
+            if (last() in operations) {
+                append(0)
             }
             // Добавляем точку и вешаем флаг точки на 2 число
-            exprsn.append('.')
+            append('.')
             pointFlag2 = true
         }
 
     }
 
-    private fun operation(usedOperation: Char) {
+    private fun operation(usedOperation: Char) = with(exprsn) {
 
 
         // Если уже есть какая-то операция...
@@ -85,18 +87,18 @@ data class CalculatorData(
                 // а следующая операция является '%',
                 // тогда считаем % 2-го числа и выполняем операцию
                 usedOperation == '%' && operation != '%'
-                        && exprsn.last() !in operations -> percentInTheEnd()
+                        && last() !in operations -> percentInTheEnd()
 
                 // 2) .. и когда последним символом является любая из операций,
                 // удаляем эту операцию, заменяя её на новую
-                exprsn.last() in operations ->
-                    exprsn.deleteCharAt(exprsn.lastIndex)
+                last() in operations ->
+                    deleteCharAt(lastIndex)
 
                 // 3) .. и когда последним символом является точка,
                 // удаляем её, снимаем флаг точки со 2-го числа,
                 // если вдруг он там был и вычисляем выражение
-                exprsn.last() == '.' -> {
-                    exprsn.deleteCharAt(exprsn.lastIndex)
+                last() == '.' -> {
+                    deleteCharAt(lastIndex)
                     pointFlag2 = false
                     operationsProcessing()
                 }
@@ -109,33 +111,31 @@ data class CalculatorData(
             }
             // Если ещё нет никакой операции в строке..
         } else {
-            if(exprsn.last() == '.') {
+            if (last() == '.') {
                 // 1) .. и последним символом в строке является точка,
-                    // удаляем флаг с 1 точки и удаляем точку
-                    pointFlag1 = false
-                    exprsn.deleteCharAt(exprsn.lastIndex)
+                // удаляем флаг с 1 точки и удаляем точку
+                pointFlag1 = false
+                deleteCharAt(lastIndex)
             }
 
         }
 //        Log.i("percentFlag", percentFlag.toString())
         // Если наша операция не процент, тогда добавляем операцию в конец
         if (!percentFlag) {
-            exprsn.append(usedOperation)
+            append(usedOperation)
             operation = usedOperation
         }
     }
 
-    private fun percentInTheEnd() {
+    private fun percentInTheEnd() = with(exprsn) {
 
         // Записываем выражение с процентом в конце,
         // чтобы потом вывести его в верхнюю строку
-        percentExpression = "$exprsn%="
+        percentExpression = "$this%="
 
         // Вытаскиваем 1 и 2 числа из выражения
-        val firstNumberPart = exprsn.substring(0,
-            exprsn.indexOf(operation!!)).toBigDecimal()
-        var secondNumberPart = exprsn.substring(exprsn.indexOf(operation!!) + 1,
-            exprsn.length).toBigDecimal()
+        val firstNumberPart = substring(0, indexOf(operation!!)).toBigDecimal()
+        var secondNumberPart = substring(indexOf(operation!!) + 1, length).toBigDecimal()
 
         // Высчитываем % 2-го числа
         secondNumberPart = firstNumberPart
@@ -143,8 +143,7 @@ data class CalculatorData(
             .multiply(secondNumberPart, MathContext.DECIMAL64)
 
         // Удаляем из выражения 2 число с % и добавляем вычисленное число
-        exprsn.delete(exprsn.indexOf(operation!!) + 1, exprsn.length)
-            .append(secondNumberPart)
+        delete(indexOf(operation!!) + 1, length).append(secondNumberPart)
 
         /*(exprsn.length >= 2 && exprsn.last() == '0' &&
             exprsn[exprsn.lastIndex - 1] == '.')
@@ -154,23 +153,22 @@ data class CalculatorData(
         operationsProcessing()
     }
 
-    private fun operationsProcessing() {
+    private fun operationsProcessing() = with(exprsn) {
         // Если есть какая-то операция и она не является
         // последним символом, тогда..
-        if (operation != null && exprsn.last() !in operations) {
+        if (operation != null && last() !in operations) {
 
             // Если последний символ - это точка, добавить 0
-            if (exprsn.last() == '.') exprsn.append(0)
+            if (last() == '.') append(0)
 
             // Вычисляем индекс операции
-            val operationIndex: Int = exprsn.indexOf(operation!!, 1)
+            val operationIndex: Int = indexOf(operation!!, 1)
             // Вытаскиваем из строки 1 и 2 числа
-            firstNumber = BigDecimal(exprsn.substring(0, operationIndex), MathContext.DECIMAL64)
-            secondNumber = BigDecimal(
-                exprsn.substring(operationIndex + 1, exprsn.length), MathContext.DECIMAL64)
+            firstNumber = BigDecimal(substring(0, operationIndex), MathContext.DECIMAL64)
+            secondNumber = BigDecimal(substring(operationIndex + 1, length), MathContext.DECIMAL64)
             Log.i("Divide", "$firstNumber and $secondNumber")
 
-                // Вычислеям выражение в зависимости от операции
+            // Вычислеям выражение в зависимости от операции
             when (operation) {
                 '+' -> {
                     result = firstNumber?.add(secondNumber, MathContext.DECIMAL64)
@@ -192,29 +190,34 @@ data class CalculatorData(
                 }
                 0x221A.toChar() -> {
                     result = secondNumber?.toDouble()
-                        ?.let { sqrt(it).toBigDecimal().multiply(firstNumber, MathContext.DECIMAL64) }
+                        ?.let {
+                            sqrt(it).toBigDecimal().multiply(firstNumber, MathContext.DECIMAL64)
+                        }
 
                 }
                 '%' -> {
-                    result = firstNumber?.divide(100.toBigDecimal())?.multiply(secondNumber, MathContext.DECIMAL64)
+                    result = firstNumber?.divide(100.toBigDecimal())
+                        ?.multiply(secondNumber, MathContext.DECIMAL64)
                 }
                 '^' -> {
                     result = secondNumber?.toInt()
-                        ?.let { firstNumber?.pow(it)?.multiply(1.toBigDecimal(), MathContext.DECIMAL64) }
+                        ?.let {
+                            firstNumber?.pow(it)?.multiply(1.toBigDecimal(), MathContext.DECIMAL64)
+                        }
                 }
             }
 
         }
     }
 
-    fun deleteOne() {
+    fun deleteOne() = with(exprsn) {
 
         // Если последний символ - это операция,
         // то обнуляем переменную, хранящую действующую операцию
-        if (exprsn.last() in operations) operation = null
+        if (last() in operations) operation = null
 
         // Иначе, если последний символ - '.', удаляем её и снимаем флаг точки
-        else if (exprsn.last() == '.') {
+        else if (last() == '.') {
 
             // Если это 2 число, удаляем флаг 2-ой точки
             if (operation != null) pointFlag2 = false
@@ -225,12 +228,12 @@ data class CalculatorData(
 
         // Удаляем последний символ из строки и выводим строку на экран,
         // если длина строки больше 1
-        if (exprsn.length > 1)
-            exprsn.deleteCharAt(exprsn.lastIndex)
+        if (length > 1)
+            deleteCharAt(lastIndex)
         // Иначе очищаем и добавляем 0
-        else exprsn.clear().append(0)
+        else clear().append(0)
 
-       // userView()
+        // userView()
 
     }
 
