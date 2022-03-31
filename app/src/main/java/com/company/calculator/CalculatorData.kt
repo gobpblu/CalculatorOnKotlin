@@ -24,9 +24,11 @@ data class CalculatorData(
 ) {
 
     fun buildString(input: Char) = with(exprsn) {
-//        Если входной знак - число, тогда добавляем его
-        if (input in '0'..'9') {
-//            if (cd.exprsn.length >= 3 && cd.operation != null) Log.i("SecondNumber", cd.exprsn.indexOf(cd.operation!!).toString())
+        when(input) {
+
+            //        Если входной знак - число, тогда добавляем его
+            in '0'..'9' -> {
+
             // Если длина строки равна 1 и первый символ в строке это 0, тогда очищаем строку
             if (length == 1 && first() == '0')
                 clear()
@@ -34,22 +36,20 @@ data class CalculatorData(
             // Добавляем цифру, выводим на экран
             append(input)
 
-        } // Иначе, если входной знак '.' и хотя бы в 1 числе нет точки,
+        }
+            // Иначе, если входной знак '.' и хотя бы в 1 числе нет точки,
         // тогда добавляем точку
-        else if (input == '.' && (!pointFlag1 || !pointFlag2)) {
-            pointProcessing()
-        }
+        '.'  -> if (!pointFlag1 || !pointFlag2) pointProcessing() else {}
+
         // Иначе, если входной знак '=', тогда вычисляем выражение
-        else if (input == '=') {
-            operationsProcessing()
-        }
+        '=' -> operationsProcessing()
+
         // Иначе, если входной знак - это одна из операций,
         // вычисляем выражение, если это уже 2-ая операция
         // а если первая, то просто добавляем знак и выводим
-        else if (input in operations) {
-            operation(input)
-        } else {
+        in operations -> operation(input)
 
+            else -> {}
         }
     }
 
