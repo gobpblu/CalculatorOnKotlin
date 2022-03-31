@@ -3,16 +3,15 @@ package com.company.calculator
 import android.util.Log
 import java.math.BigDecimal
 import java.math.MathContext
-import kotlin.math.pow
 import kotlin.math.sqrt
 
 data class CalculatorData(
     var exprsn: StringBuilder = StringBuilder().append(0),
-    var secondNumber: BigDecimal = BigDecimal(0.0),
-    var firstNumber: BigDecimal = BigDecimal(0.0),
+    var firstNumber: BigDecimal? = null,
+    var secondNumber: BigDecimal? = null,
     var result: BigDecimal? = null,
     var operation: Char? = null,
-    var lastOperation: String? = null,
+    var nextOperation: Char? = null,
     var pointFlag1: Boolean = false,
     var pointFlag2: Boolean = false,
     var dividedBy0Flag: Boolean = false,
@@ -20,51 +19,191 @@ data class CalculatorData(
     var percentFlag: Boolean = false,
     val operations: Array<Char> = arrayOf(
         '+', '-', 0x00D7.toChar(),
-        0x00F7.toChar(), 0x221A.toChar(), '%', '^'
-    )
+        0x00F7.toChar(), 0x221A.toChar(), '%', '^')
 ) {
 
-    fun equalsProcessing() {
-        // Если есть какая-то операция (operation != null),
-        // тогда проверяем какая и вычисляем выражение
-        if (operation != null && exprsn[exprsn.lastIndex] !in operations) {
+    fun buildString(input: Char) {
+//        Если входной знак - число, тогда добавляем его
+        if (input in '0'..'9') {
+//            if (cd.exprsn.length >= 3 && cd.operation != null) Log.i("SecondNumber", cd.exprsn.indexOf(cd.operation!!).toString())
+            // Если длина строки равна 1 и первый символ в строке это 0, тогда очищаем строку
+            if (exprsn.length == 1 && exprsn[0] == '0')
+                exprsn.clear()
 
+            // Добавляем цифру, выводим на экран
+            exprsn.append(input)
+
+        } // Иначе, если входной знак '.' и хотя бы в 1 числе нет точки,
+        // тогда добавляем точку
+        else if (input == '.' && (!pointFlag1 || !pointFlag2)) {
+            pointProcessing()
+        }
+        // Иначе, если входной знак '=', тогда вычисляем выражение
+        else if (input == '=') {
+            operationsProcessing()
+        }
+        // Иначе, если входной знак - это одна из операций,
+        // вычисляем выражение, если это уже 2-ая операция
+        // а если первая, то просто добавляем знак и выводим
+        else if (input in operations){
+            operation(input)
+        }
+
+    }
+
+    private fun pointProcessing() {
+
+        // Если мы работаем с 1 числом и у нас нет точки в 1 числе, тогда
+        // добавляем точку, вешаем флаг точки на 1 число
+        if (!pointFlag1 && operation == null) {
+            exprsn.append('.')
+            pointFlag1 = true
+        }
+        // Иначе, если мы работаем со 2 числом и у нас нет точки во 2 числе,
+        // тогда...
+        else if (!pointFlag2 && operation != null) {
+
+            // Если последний знак - это операция, тогда добавляем 0
+            if (exprsn.last() in operations) {
+                exprsn.append(0)
+            }
+            // Добавляем точку и вешаем флаг точки на 2 число
+            exprsn.append('.')
+            pointFlag2 = true
+        }
+
+    }
+
+    private fun operation(usedOperation: Char) {
+
+
+        // Если уже есть какая-то операция...
+        if (operation != null) {
+            when {
+
+                // 1) .. и эта операция не является '%',
+                // а следующая операция является '%',
+                // тогда считаем % 2-го числа и выполняем операцию
+                usedOperation == '%' && operation != '%'
+                        && exprsn.last() !in operations -> percentInTheEnd()
+
+                // 2) .. и когда последним символом является любая из операций,
+                // удаляем эту операцию, заменяя её на новую
+                exprsn.last() in operations ->
+                    exprsn.deleteCharAt(exprsn.lastIndex)
+
+                // 3) .. и когда последним символом является точка,
+                // удаляем её, снимаем флаг точки со 2-го числа,
+                // если вдруг он там был и вычисляем выражение
+                exprsn.last() == '.' -> {
+                    exprsn.deleteCharAt(exprsn.lastIndex)
+                    pointFlag2 = false
+                    operationsProcessing()
+                }
+
+                // 4).. и когда последним символом не является
+                // ни какая-то операция, ни точка, вычисляем выражение
+                else -> {
+                    operationsProcessing()
+                }
+            }
+            // Если ещё нет никакой операции в строке..
+        } else {
+            if(exprsn.last() == '.') {
+                // 1) .. и последним символом в строке является точка,
+                    // удаляем флаг с 1 точки и удаляем точку
+                    pointFlag1 = false
+                    exprsn.deleteCharAt(exprsn.lastIndex)
+            }
+
+        }
+//        Log.i("percentFlag", percentFlag.toString())
+        // Если наша операция не процент, тогда добавляем операцию в конец
+        if (!percentFlag) {
+            exprsn.append(usedOperation)
+            operation = usedOperation
+        }
+    }
+
+    private fun percentInTheEnd() {
+
+        // Записываем выражение с процентом в конце,
+        // чтобы потом вывести его в верхнюю строку
+        percentExpression = "$exprsn%="
+
+        // Вытаскиваем 1 и 2 числа из выражения
+        val firstNumberPart = exprsn.substring(0,
+            exprsn.indexOf(operation!!)).toBigDecimal()
+        var secondNumberPart = exprsn.substring(exprsn.indexOf(operation!!) + 1,
+            exprsn.length).toBigDecimal()
+
+        // Высчитываем % 2-го числа
+        secondNumberPart = firstNumberPart
+            .divide(100.toBigDecimal(), MathContext.DECIMAL64)
+            .multiply(secondNumberPart, MathContext.DECIMAL64)
+
+        // Удаляем из выражения 2 число с % и добавляем вычисленное число
+        exprsn.delete(exprsn.indexOf(operation!!) + 1, exprsn.length)
+            .append(secondNumberPart)
+
+        /*(exprsn.length >= 2 && exprsn.last() == '0' &&
+            exprsn[exprsn.lastIndex - 1] == '.')
+            exprsn.delete(exprsn.lastIndex - 1, exprsn.length)*/
+
+        percentFlag = true
+        operationsProcessing()
+    }
+
+    private fun operationsProcessing() {
+        // Если есть какая-то операция и она не является
+        // последним символом, тогда..
+        if (operation != null && exprsn.last() !in operations) {
+
+            // Если последний символ - это точка, добавить 0
             if (exprsn.last() == '.') exprsn.append(0)
 
-            val operationIndex: Int = exprsn.indexOf(operation!!)
-            firstNumber = BigDecimal(exprsn.substring(0, operationIndex))
+            // Вычисляем индекс операции
+            val operationIndex: Int = exprsn.indexOf(operation!!, 1)
+            // Вытаскиваем из строки 1 и 2 числа
+            firstNumber = BigDecimal(exprsn.substring(0, operationIndex), MathContext.DECIMAL64)
             secondNumber = BigDecimal(
-                exprsn.substring(operationIndex + 1, exprsn.length))
+                exprsn.substring(operationIndex + 1, exprsn.length), MathContext.DECIMAL64)
             Log.i("Divide", "$firstNumber and $secondNumber")
+
+                // Вычислеям выражение в зависимости от операции
             when (operation) {
                 '+' -> {
-                    result = firstNumber.add(secondNumber, MathContext.DECIMAL32)
+                    result = firstNumber?.add(secondNumber, MathContext.DECIMAL64)
                 }
                 '-' -> {
-                    result = firstNumber.subtract(secondNumber, MathContext.DECIMAL32)
+                    result = firstNumber?.subtract(secondNumber, MathContext.DECIMAL64)
                 }
                 0x00D7.toChar() -> {
-                    result = firstNumber.multiply(secondNumber, MathContext.DECIMAL32)
+                    result = firstNumber?.multiply(secondNumber, MathContext.DECIMAL64)
                     Log.i("Divide", "$result")
                 }
                 0x00F7.toChar() -> {
-                    result = if (secondNumber.toDouble() != 0.0) {
-                        firstNumber.divide(secondNumber, MathContext.DECIMAL32)
+                    result = if (secondNumber?.toDouble() != 0.0) {
+                        firstNumber?.divide(secondNumber, MathContext.DECIMAL64)
                     } else {
                         dividedBy0Flag = true
                         null
                     }
                 }
                 0x221A.toChar() -> {
-                    result = sqrt(secondNumber.toDouble()).toBigDecimal().multiply(firstNumber, MathContext.DECIMAL32)
+                    result = secondNumber?.toDouble()
+                        ?.let { sqrt(it).toBigDecimal().multiply(firstNumber, MathContext.DECIMAL64) }
+
                 }
                 '%' -> {
-                    result = firstNumber.divide(100.toBigDecimal()).multiply(secondNumber, MathContext.DECIMAL32)
+                    result = firstNumber?.divide(100.toBigDecimal())?.multiply(secondNumber, MathContext.DECIMAL64)
                 }
                 '^' -> {
-                    result = firstNumber.pow(secondNumber.toInt()).multiply(1.toBigDecimal(), MathContext.DECIMAL32)
+                    result = secondNumber?.toInt()
+                        ?.let { firstNumber?.pow(it)?.multiply(1.toBigDecimal(), MathContext.DECIMAL64) }
                 }
             }
+
         }
     }
 
@@ -84,10 +223,34 @@ data class CalculatorData(
 
         }
 
-        // Удаляем последний символ из строки и выводим строку на экран
+        // Удаляем последний символ из строки и выводим строку на экран,
+        // если длина строки больше 1
         if (exprsn.length > 1)
             exprsn.deleteCharAt(exprsn.lastIndex)
+        // Иначе очищаем и добавляем 0
         else exprsn.clear().append(0)
 
+       // userView()
+
     }
+
+    fun clearAll() {
+
+        // Полное обнуление данных калькулятора
+        exprsn.clear().append(0)
+        firstNumber = BigDecimal(0.0)
+        secondNumber = null
+        result = null
+        operation = null
+        nextOperation = null
+        pointFlag1 = false
+        pointFlag2 = false
+        dividedBy0Flag = false
+        percentExpression = ""
+        percentFlag = false
+
+        // enteredNumber.text = ""
+        // userView()
+    }
+
 }
